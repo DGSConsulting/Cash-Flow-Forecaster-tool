@@ -4,7 +4,7 @@
 
 A simple, web-based tool to forecast your business cash flow for up to 24 months ahead. Perfect for solopreneurs and small teams who need clear financial insights without the complexity.
 
-🔗 **[Try it now](https://dgsconsulting.github.io/cash-flow-forecaster/)**
+🔗 **[Try it now](https://dgsconsulting.github.io/Cash-Flow-Forecaster-tool/)**
 
 ## What it does
 
