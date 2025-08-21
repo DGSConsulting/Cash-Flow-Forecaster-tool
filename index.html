@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Flow Forecaster | DGS Consulting</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            margin-top: 0.5rem;
+        }
+
+        .forecast-results {
+            grid-column: 1 / -1;
+            margin-top: 2rem;
+        }
+
+        .forecast-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .forecast-table th,
+        .forecast-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .forecast-table th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        .forecast-table tr:hover {
+            background: var(--background);
+        }
+
+        .positive {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .negative {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+
+        .warning {
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .summary-card h3 {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .summary-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .insights {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+        }
+
+        .insights h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .insight-item {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .insight-positive {
+            background: #f0fdf4;
+            border-color: var(--accent-color);
+        }
+
+        .insight-warning {
+            background: #fffbeb;
+            border-color: var(--warning-color);
+        }
+
+        .insight-negative {
+            background: #fef2f2;
+            border-color: var(--danger-color);
+        }
+
+        @media (max-width: 768px) {
+            .tool-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Cash Flow Forecaster</h1>
+            <p>Plan your financial future with confidence. Forecast your cash flow for the next 12 months.</p>
+        </div>
+
+        <div class="tool-grid">
+            <div class="card">
+                <h2>📊 Current Financial Position</h2>
+                <div class="input-group">
+                    <label for="currentCash">Current Cash Balance ($)</label>
+                    <input type="number" id="currentCash" placeholder="10000" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="monthlyRevenue">Average Monthly Revenue ($)</label>
+                    <input type="number" id="monthlyRevenue" placeholder="15000" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="revenueGrowth">Expected Monthly Revenue Growth (%)</label>
+                    <input type="number" id="revenueGrowth" placeholder="2" step="0.1">
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💸 Monthly Expenses</h2>
+                <div class="input-group">
+                    <label for="fixedExpenses">Fixed Expenses ($)</label>
+                    <input type="number" id="fixedExpenses" placeholder="8000" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="variableExpenses">Variable Expenses ($)</label>
+                    <input type="number" id="variableExpenses" placeholder="3000" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="expenseGrowth">Expected Monthly Expense Growth (%)</label>
+                    <input type="number" id="expenseGrowth" placeholder="1" step="0.1">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ Forecast Settings</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                <div class="input-group">
+                    <label for="forecastMonths">Forecast Period (Months)</label>
+                    <select id="forecastMonths">
+                        <option value="6">6 Months</option>
+                        <option value="12" selected>12 Months</option>
+                        <option value="18">18 Months</option>
+                        <option value="24">24 Months</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="minCashReserve">Minimum Cash Reserve ($)</label>
+                    <input type="number" id="minCashReserve" placeholder="5000" step="0.01">
+                </div>
+                <div style="display: flex; align-items: end;">
+                    <button class="btn" onclick="generateForecast()">Generate Forecast</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="results" class="forecast-results hidden">
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <h3>Ending Cash Balance</h3>
+                    <div class="value" id="endingBalance">$0</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Net Cash Flow</h3>
+                    <div class="value" id="netCashFlow">$0</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Months Below Minimum</h3>
+                    <div class="value" id="monthsBelow">0</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Cash Flow Health</h3>
+                    <div class="value" id="healthScore">Good</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📈 Monthly Forecast</h2>
+                <table class="forecast-table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Revenue</th>
+                            <th>Expenses</th>
+                            <th>Net Cash Flow</th>
+                            <th>Ending Balance</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="forecastTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="insights">
+                <h3>💡 Cash Flow Insights & Recommendations</h3>
+                <div id="insightsContainer"></div>
+                
+                <button class="btn btn-secondary" onclick="exportForecast()" style="width: auto; margin-top: 1rem;">
+                    📊 Export Forecast Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateForecast() {
+            // Get input values
+            const currentCash = parseFloat(document.getElementById('currentCash').value) || 0;
+            const monthlyRevenue = parseFloat(document.getElementById('monthlyRevenue').value) || 0;
+            const revenueGrowth = parseFloat(document.getElementById('revenueGrowth').value) || 0;
+            const fixedExpenses = parseFloat(document.getElementById('fixedExpenses').value) || 0;
+            const variableExpenses = parseFloat(document.getElementById('variableExpenses').value) || 0;
+            const expenseGrowth = parseFloat(document.getElementById('expenseGrowth').value) || 0;
+            const forecastMonths = parseInt(document.getElementById('forecastMonths').value);
+            const minCashReserve = parseFloat(document.getElementById('minCashReserve').value) || 0;
+
+            // Calculate forecast
+            let forecastData = [];
+            let runningBalance = currentCash;
+            let totalNetFlow = 0;
+            let monthsBelowMin = 0;
+            let currentRevenue = monthlyRevenue;
+            let currentExpenses = fixedExpenses + variableExpenses;
+
+            for (let month = 1; month <= forecastMonths; month++) {
+                // Apply growth rates
+                if (month > 1) {
+                    currentRevenue *= (1 + revenueGrowth / 100);
+                    currentExpenses *= (1 + expenseGrowth / 100);
+                }
+
+                const netFlow = currentRevenue - currentExpenses;
+                runningBalance += netFlow;
+                totalNetFlow += netFlow;
+
+                if (runningBalance < minCashReserve) {
+                    monthsBelowMin++;
+                }
+
+                const status = runningBalance < 0 ? 'Critical' : 
+                              runningBalance < minCashReserve ? 'Warning' : 'Healthy';
+
+                forecastData.push({
+                    month: month,
+                    revenue: currentRevenue,
+                    expenses: currentExpenses,
+                    netFlow: netFlow,
+                    balance: runningBalance,
+                    status: status
+                });
+            }
+
+            // Update summary cards
+            document.getElementById('endingBalance').textContent = formatCurrency(runningBalance);
+            document.getElementById('netCashFlow').textContent = formatCurrency(totalNetFlow);
+            document.getElementById('monthsBelow').textContent = monthsBelowMin;
+            
+            const healthScore = runningBalance > minCashReserve * 2 ? 'Excellent' :
+                               runningBalance > minCashReserve ? 'Good' :
+                               runningBalance > 0 ? 'Fair' : 'Critical';
+            document.getElementById('healthScore').textContent = healthScore;
+
+            // Color code the values
+            document.getElementById('endingBalance').className = runningBalance > 0 ? 'positive' : 'negative';
+            document.getElementById('netCashFlow').className = totalNetFlow > 0 ? 'positive' : 'negative';
+            document.getElementById('monthsBelow').className = monthsBelowMin === 0 ? 'positive' : monthsBelowMin > 3 ? 'negative' : 'warning';
+
+            // Populate forecast table
+            const tableBody = document.getElementById('forecastTableBody');
+            tableBody.innerHTML = '';
+
+            forecastData.forEach(data => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>Month ${data.month}</td>
+                    <td class="positive">${formatCurrency(data.revenue)}</td>
+                    <td class="negative">${formatCurrency(data.expenses)}</td>
+                    <td class="${data.netFlow >= 0 ? 'positive' : 'negative'}">${formatCurrency(data.netFlow)}</td>
+                    <td class="${data.balance >= minCashReserve ? 'positive' : data.balance > 0 ? 'warning' : 'negative'}">${formatCurrency(data.balance)}</td>
+                    <td class="${data.status === 'Healthy' ? 'positive' : data.status === 'Warning' ? 'warning' : 'negative'}">${data.status}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Generate insights
+            generateInsights(forecastData, minCashReserve, totalNetFlow, runningBalance);
+
+            // Show results
+            document.getElementById('results').classList.remove('hidden');
+        }
+
+        function generateInsights(data, minReserve, totalNet, endingBalance) {
+            const container = document.getElementById('insightsContainer');
+            container.innerHTML = '';
+
+            const insights = [];
+
+            // Cash flow trend analysis
+            if (totalNet > 0) {
+                insights.push({
+                    type: 'positive',
+                    title: 'Positive Cash Flow Trend',
+                    message: `Your business is generating ${formatCurrency(totalNet)} in positive cash flow over the forecast period.`
+                });
+            } else {
+                insights.push({
+                    type: 'negative',
+                    title: 'Negative Cash Flow Trend',
+                    message: `Your business will consume ${formatCurrency(Math.abs(totalNet))} in cash over the forecast period. Consider cost reduction or revenue improvement strategies.`
+                });
+            }
+
+            // Cash reserve analysis
+            if (endingBalance < minReserve) {
+                insights.push({
+                    type: 'warning',
+                    title: 'Cash Reserve Warning',
+                    message: `Your ending cash balance will be below your minimum reserve. Consider securing additional funding or reducing expenses.`
+                });
+            }
+
+            // Growth sustainability
+            const firstMonthNet = data[0].netFlow;
+            const lastMonthNet = data[data.length - 1].netFlow;
+            
+            if (lastMonthNet < firstMonthNet) {
+                insights.push({
+                    type: 'warning',
+                    title: 'Declining Profitability',
+                    message: `Your monthly net cash flow is declining over time. Review your expense growth rate and consider revenue optimization.`
+                });
+            }
+
+            // Specific recommendations
+            insights.push({
+                type: 'positive',
+                title: 'Recommendations',
+                message: `Monitor your cash flow weekly, maintain 3-6 months of expenses in reserve, and consider diversifying revenue streams to reduce risk.`
+            });
+
+            // Render insights
+            insights.forEach(insight => {
+                const div = document.createElement('div');
+                div.className = `insight-item insight-${insight.type}`;
+                div.innerHTML = `<strong>${insight.title}:</strong> ${insight.message}`;
+                container.appendChild(div);
+            });
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function exportForecast() {
+            // Get forecast data
+            const table = document.getElementById('forecastTableBody');
+            const rows = table.getElementsByTagName('tr');
+            
+            let csvContent = 'Month,Revenue,Expenses,Net Cash Flow,Ending Balance,Status\n';
+            
+            for (let row of rows) {
+                const cells = row.getElementsByTagName('td');
+                const rowData = [];
+                for (let cell of cells) {
+                    // Clean up currency formatting for CSV
+                    let cellText = cell.textContent.replace(/[$,]/g, '');
+                    rowData.push(cellText);
+                }
+                csvContent += rowData.join(',') + '\n';
+            }
+            
+            // Create download
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'cash_flow_forecast.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Initialize with sample data
+        window.onload = function() {
+            document.getElementById('currentCash').value = '25000';
+            document.getElementById('monthlyRevenue').value = '18000';
+            document.getElementById('revenueGrowth').value = '2';
+            document.getElementById('fixedExpenses').value = '8500';
+            document.getElementById('variableExpenses').value = '4000';
+            document.getElementById('expenseGrowth').value = '1';
+            document.getElementById('minCashReserve').value = '10000';
+        };
+    </script>
+</body>
+</html>
